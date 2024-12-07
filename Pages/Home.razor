@@ -3,31 +3,58 @@
 
 <PageTitle>Home</PageTitle>
 
-<h3>Fight</h3>
+<div id="fight">
+    <h3>Fight</h3>
+    <div class="players-container">
+        <div class="player">
+            <p><strong>Player 1:</strong> @warrior.CharacterName</p>
+            <p><strong>Health:</strong> @warrior.HealthValue HP</p>
+            <p><strong>Energy:</strong> @warrior.EnergyValue Energy</p>
+            <button class="btn btn-danger" @onclick="WarriorAttack">P1 Attack P2</button>
+        </div>
 
-<p><strong>Player 1:</strong> @warrior.Name</p>
-<p><strong>Vie du joueur:</strong> @warrior.HealthValue HP</p>
+        <div class="player">
+            <p><strong>Player 2:</strong> @mage.CharacterName</p>
+            <p><strong>Health:</strong> @mage.HealthValue HP</p>
+            <p><strong>Energy:</strong> @mage.EnergyValue Energy</p>
+            <button class="btn btn-danger" @onclick="MageAttack">P2 Attack P1</button>
+        </div>
+    </div>
+</div>
 
-<p><strong>Player 2:</strong> @mage.Name</p>
-<p><strong>Vie du joueur:</strong> @mage.HealthValue HP</p>
-
-<button class="btn btn-danger" @onclick="Attack">Attaquer le mage</button>
+<div id="console">
+    <h3>Console</h3>
+    <ConsoleComponent />
+</div>
 
 @code {
-    private Hero_Warrior warrior;
-    private Hero_Mage mage;
+    // Embedded Console
+    
+    void LogSomething()
+    {
+        Console.WriteLine("This is a test message!");
+    }
+    
+    // Fight Plugin
+    private Hero_Warrior? warrior;
+    private Hero_Mage? mage;
 
     protected override void OnInitialized()
     {
         // Initialize player 1
-        warrior = new Hero_Warrior("Ragnar", 1, 0, 20, 12, 5, 3);
+        warrior = new Hero_Warrior("Ragnar", 1, 0, false, 20, 12, 5, 3);
 
         // Initialize player 2
-        mage = new Hero_Mage("Ariana", 1, 0, 16, 18, 7, 2);
+        mage = new Hero_Mage("Ariana", 1, 0, false, 16, 18, 7, 2);
     }
 
-    private void Attack()
+    private void WarriorAttack()
     {
         warrior.Attack(mage);
+    }
+    
+    private void MageAttack()
+    {
+        mage.Attack(warrior);
     }
 }

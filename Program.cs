@@ -1,6 +1,9 @@
-using JDR;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using System;
+using System.Text;
+using System.Net.Http;
+using JDR;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -8,9 +11,31 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
-await builder.Build().RunAsync();
+// Embedded Console
 
-Hero_Warrior Warrior1 = new Hero_Warrior("Ragnar", 1, 0, 20, 12, 5, 3);
-Hero_Mage Mage1 = new Hero_Mage("Ariana", 1, 0, 16, 18, 7, 2);
+builder.Services.AddSingleton<LogService>();
 
-Warrior1.Attack(Mage1);
+var host = builder.Build();
+
+var logService = host.Services.GetRequiredService<LogService>();
+Console.SetOut(new LogWriter(logService));
+
+await host.RunAsync();
+
+public class LogWriter : System.IO.TextWriter
+{
+    private readonly LogService _logService;
+    public override Encoding Encoding => null;
+
+    public LogWriter(LogService logService)
+    {
+        _logService = logService;
+    }
+
+    public override void WriteLine(string message)
+    {
+        _logService.Log(message);
+    }
+
+    public override void Write(char value) { }
+}

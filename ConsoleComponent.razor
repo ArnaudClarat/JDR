@@ -1,0 +1,25 @@
+@inject LogService LogService
+
+<div class="console">
+    @foreach (var log in LogService.GetLogs())
+    {
+        <div class="log-entry">@log</div>
+    }
+</div>
+
+@code {
+    protected override void OnInitialized()
+    {
+        LogService.OnLogUpdated += UpdateLogs;
+    }
+
+    private void UpdateLogs()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        LogService.OnLogUpdated -= UpdateLogs;
+    }
+}
