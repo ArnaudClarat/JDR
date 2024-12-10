@@ -1,8 +1,8 @@
 namespace JDR;
 
-public class Hero_Warrior : Character
+public class HeroWarrior : Hero
 {
-    public Hero_Warrior(string characterName, int level, int experienceValue, bool isDead, int healthValue, int energyValue, int attackValue, int armorValue) : base(characterName, level, experienceValue, isDead, healthValue, energyValue, attackValue, armorValue)
+    public HeroWarrior(string characterName, bool isDead, int healthValue, int energyValue, int attackValue, int armorValue, LevelProgression progression, int level, int experienceValue) : base(characterName, isDead, healthValue, energyValue, attackValue, armorValue, progression, level, experienceValue)
     {
     }
 }
