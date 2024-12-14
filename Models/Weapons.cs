@@ -4,7 +4,7 @@ namespace JDR
     public enum WeaponsType {Sword, Axe, Mace}
     public enum MaterialWeapons {Wood, Stone, Bone, Metal, Gold}
 
-    public abstract class Weapons : Treasure
+    public class Weapons : Treasure
     {
         public string Name {get; set; }
         public MaterialWeapons MaterialType {get; set; }
@@ -14,6 +14,8 @@ namespace JDR
         public double Weight {get; private set; }
         
         private static Random random = new Random();
+        private MaterialWeapons material;
+        private WeaponsType weaponsType;
 
         public Weapons (string name, MaterialWeapons materialType, WeaponsType weaponsType)
         {
@@ -23,7 +25,13 @@ namespace JDR
             MaterialType = materialType;
             SetAttributes(materialType);
         }
-        
+
+        public Weapons(MaterialWeapons material, WeaponsType weaponsType)
+        {
+            this.material = material;
+            this.weaponsType = weaponsType;
+        }
+
         private void SetWeaponsType(WeaponsType weaponsType)
         {
             switch (weaponsType)
