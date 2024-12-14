@@ -4,9 +4,15 @@ namespace JDR
     {
         private static Random random = new Random();
 
-        //void MaterialChance(double lvl);
+        public WeaponsType GetMaterialTypes()
+        {
+            var weaponsType = Enum.GetValues(typeof(WeaponsType));
 
-        public MaterialWeapons MaterialChance(int level) // Wood, Stone, Bone, Metal, Gold
+            int randomIndex = random.Next(weaponsType.Length);
+
+            return (WeaponsType)weaponsType.GetValue(randomIndex);
+        }
+        public MaterialWeapons MaterialChance(int level)
         {
             int roll = random.Next(1, 100);
 
@@ -47,7 +53,7 @@ namespace JDR
                     if (roll <=95) return MaterialWeapons.Metal;
                     return MaterialWeapons.Gold;
 
-                case 7 : 
+                case >= 7 : 
                     if (roll <=50) return MaterialWeapons.Wood;
                     if (roll <=80) return MaterialWeapons.Stone;
                     if (roll <=90) return MaterialWeapons.Bone;
@@ -59,8 +65,11 @@ namespace JDR
             }
         }
 
-        public Treasure GetRandomTreasure()
+        public Treasure GetRandomTreasure(int level)
         {
+            MaterialWeapons material = MaterialChance(level);
+            WeaponsType weaponsType = GetMaterialTypes();
+            return new Weapons(material, weaponsType);
         }
     }
 }
