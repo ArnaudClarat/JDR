@@ -1,7 +1,44 @@
 ﻿@page "/"
+@using JDR.Models
 
-<PageTitle>Home</PageTitle>
+<h4 id="title">Grille avec Joueur</h4>
 
-<h1>Hello, world!</h1>
+<div 
+    class="grid" 
+    tabindex="0"
+    @onkeydown="HandleKeyDown"
+    @ref="gridRef"
+    autofocus
+>
+    @for (int row = 0; row < GridSize; row++)
+    {
+        @for (int col = 0; col < GridSize; col++)
+        {
+            <div class="cell @(row == player.Y && col == player.X ? $"sprite {player.FacingDirection}" : "")"></div>
+        }
+    }
+</div>
 
-Welcome to your new game.
+@code {
+    private const int GridSize = 10;
+    private Player player = new Player();
+    private ElementReference gridRef;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)        
+            {
+                await gridRef.FocusAsync();
+            }
+    }
+
+    private void HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key.StartsWith("Arrow"))
+        {
+            string direction = e.Key.Replace("Arrow", ""); // Extrait "Up", "Down", "Left", ou "Right"
+            player.Move(direction, GridSize);
+            StateHasChanged(); // Met à jour l'affichage
+        }
+    }
+}
