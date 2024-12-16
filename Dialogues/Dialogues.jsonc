@@ -1,0 +1,53 @@
+
+{
+    "npcs": [
+        {
+            "id": "npc_villager",
+            "name": "Marc",
+            "position": {},
+            "dialogues": [
+                {
+                    "id": "start",
+                    "text": "Bonjour aventurier! Bienvenu à <span class='rgnvzland'>Rgnvzland</span>\nC'était autre fois un pays en paix jusqu'au jour où des monstres sont apparus",
+                    "choices":[
+                        {"text": "Que s'est-il passé?", "next": "history"},
+                        {"text": "Me raconte pas ta vie", "next": "aggresive"}
+
+                    ]  
+                },
+                {
+                    "id": "history",
+                    "text": "En l'an 832 du calendrier de <span class='rgnvzland'>Rgnvzland</span>and, une faille scintillante s'ouvrit dans le ciel de la vallée d'Almaroth, libérant les terribles Gravnoraths, des monstres d'ombre et de flammes.\nLes grandes cités de marbre blanc tombèrent une à une sous leurs assauts, et le royaume, jadis prospère, sombra dans le chaos.",
+                    "choices":[
+                        {"text": "Oh non c'est horrible! Que puis-je faire pour vous aider?", "next": "help"},
+                        {"text": "Finalemnt, je pense que je vais faire demi-tour", "next": "leave"}
+                    ]
+                },
+                {
+                    "id": "aggressive",
+                    "text": "Je ne tolérerai pas un tel affront.\nPréparez-vous à mourir!" //lancer combat
+                
+                },
+                    {
+                        "id": "help",
+                        "text": "La source de tous nos malheurs est <span class='ygrjhytgre'>Y'grjhytgre</span>, le Seigneur du Mal.\nLe vaincre permettrait de faire disparaître tous ses laquets et ramener la paix sur <span class='rgnvzland'>Rgnvzland</span>.",
+                        "choices":[
+                            {"text": "Je vais m'en occuper et vous promets de libérer le pays du joug de ce tyran.", "next": "thanks"}
+                        ]
+
+                    },
+                    {
+                        "id": "leave",
+                        "text": "Ne partez pas, je vous en supplie. Cela fait bien trop longtemps que nous sommes sous le joug de ce tyran.\nDes enfants sont nés dans les ténèbres sans avoir jamais avoir vu la lumière du soleil. Aidez-nous à nous débarasser de ce tyran pour le bien de tout un peuple.",
+                        "choices":[
+                            {"text": "Très bien, vous ne me laissez pas le choix.. Je vais vous débarasser de ce Seigneur du Mal.", "next": "thanks"}
+                        ]
+                    },
+                        {
+                            "id": "thanks",
+                            "text": "Béni soit L'Ebron Jaimes! Merci à vous cher aventurier. Que la chance vous sourit"
+                        }
+            ]
+        }
+    ]
+}

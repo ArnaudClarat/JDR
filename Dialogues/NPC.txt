@@ -1,0 +1,4 @@
+-Villageois qui acceuille le joueur
+-Prêtre qui te soigne ou t'infliges des dégâts en fontion de la réponse
+-PNJ qui te donne du stuff?
+
