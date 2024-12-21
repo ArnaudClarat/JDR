@@ -1,5 +1,26 @@
-html {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+html, body {
+    font-family: "JetBrains Mono", monospace;
+    background: #000512;
+    color: #ddd;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+#app {
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+}
+
+#app > * {
+    flex: 1;
+}
+
+h1 {
+    font-size: 8rem;
+    color: #f00;
+    align-content: center;
 }
 
 h1:focus {
@@ -100,4 +121,27 @@ a, .btn-link {
 
 code {
     color: #c02d76;
+}
+
+#console {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.console {
+    background-color: #000;
+    color: #ddd;
+    padding: 10px;
+    height: 170px;
+    width: 540px;
+    overflow-y: auto;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.8rem;
+    border: 1px solid #555;
+}
+
+.log-entry {
+    white-space: pre-wrap;
 }

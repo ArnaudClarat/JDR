@@ -1,44 +1,295 @@
 ﻿@page "/"
+@inject IJSRuntime JSRuntime
 @using JDR.Models
 
-<h4 id="title">Grille avec Joueur</h4>
+<PageTitle>JDR</PageTitle>
 
-<div 
-    class="grid" 
-    tabindex="0"
-    @onkeydown="HandleKeyDown"
-    @ref="gridRef"
-    autofocus
->
-    @for (int row = 0; row < GridSize; row++)
-    {
-        @for (int col = 0; col < GridSize; col++)
-        {
-            <div class="cell @(row == player.Y && col == player.X ? $"sprite {player.FacingDirection}" : "")"></div>
-        }
-    }
+<div id="header">
+    <h4>[Game name banner goes here]</h4>
 </div>
 
-@code {
-    private const int GridSize = 10;
-    private Player player = new Player();
-    private ElementReference gridRef;
+<!-- Game container: Contains left, center and right panel -->
+<div id="game-container">
+    
+    <!-- Left panel: Hero setup, stats and inventory -->
+    <div id="left-panel">
+        <!-- Hero stats component -->
+        <div id="hero-stats">
+            <h4>Hero Stats</h4>
+            <div class="stats">
+                <h4><strong>@hero?.CharacterName</strong></h4>
+                <p><strong>Level </strong> @hero?.Level</p>
+                <p><strong>XP:</strong> @hero?.ExperienceValue / @hero?.ExperienceToNextLevel</p>
+                <p><strong>Health:</strong> @hero?.CurrentHealthValue / @hero?.MaxHealthValue</p>
+                <p><strong>Mana:</strong> @hero?.EnergyValue / @hero?.MaxEnergyValue</p>
+                <p><strong>Armor:</strong> @hero?.ArmorValue</p>
+                <p><strong>Attack:</strong> @hero?.AttackValue</p>
+                <p><strong>Bonus Dmg:</strong> +@hero?.BonusDamage</p>
+                <p><strong>Crit Chance:</strong> @hero?.AttackValue%</p>
+                <p><strong>Haste:</strong> @hero?.AttackValue%</p>
+                <p><strong>Dodge:</strong> @hero?.AttackValue%</p>
+            </div>
+        </div>
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)        
+        <!-- Hero inventory component -->
+        <div id="hero-inventory">
+            <h4>Inventory</h4>
+            <div class="inventory">
+                <p><strong>[Inventory Content]</strong></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Central panel : Map of the game -->
+    <div id="center-panel">
+        <div style="position: relative;">
+            <div
+                class="grid"
+                tabindex="0"
+                @onkeydown="HandleKeyDown"
+                @ref="gridRef"
+                autofocus>
+                @for (int row = 0; row < GridSize; row++)
+                {
+                    @for (int col = 0; col < GridSize; col++)
+                    {
+                        var cellContent = "";
+                        if (row == hero.Y && col == hero.X)
+                            cellContent = $"sprite {hero.FacingDirection}";
+                        else if (monsters.Any(m => m.X == col && m.Y == row))
+                            cellContent = "monster";
+                        else if (fountains.Any(m => m.X == col && m.Y == row))
+                            cellContent = "fountain";
+                        <div class="cell @cellContent"></div>
+                    }
+                }
+            </div>
+
+            @if (isFighting)
             {
-                await gridRef.FocusAsync();
+                <div class="grid-overlay"></div> <!-- Grays out the map when hero is fighting -->
             }
+        </div>
+    </div>
+
+    <!-- Right panel : Fight interface -->
+    <div id="right-panel">
+        @if (isFighting)
+        {
+            <div id="fight">
+                <h4>Fight</h4>
+                <div class="fight-container">
+                    <div class="hero">
+                        <h4><strong>@hero?.CharacterName</strong></h4>
+                        <p><strong>Level </strong> @hero?.Level</p>
+                        <p><strong>Health:</strong> @hero?.CurrentHealthValue / @hero?.MaxHealthValue</p>
+                        <p><strong>Mana:</strong> @hero?.EnergyValue / @hero.MaxEnergyValue</p>
+                        <button class="btn btn-danger" @onclick="HeroAttack">Meteor Blast</button>
+                    </div>
+                    <div class="opponent">
+                        <h4><strong>@monster?.CharacterName</strong></h4>
+                        <p><strong>Level </strong> @monster?.Level</p>
+                        <p><strong>Health:</strong> @monster?.CurrentHealthValue / @monster?.MaxHealthValue</p>
+                        <button class="btn btn-danger" @onclick="MonsterAttack">Base Attack</button>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- Console component -->
+        <div id="console">
+            <ConsoleComponent />
+        </div>
+    </div>
+</div>
+
+<!-- Popup for game over event -->
+@if (isGameOver)
+{
+    <div class="popup-overlay">
+        <div class="popup">
+            <p>You died !</p>
+            <button class="btn btn-success" @onclick="RestartGame">Play again</button>
+        </div>
+    </div>
+}
+
+@code {
+    // Fight component properties
+    private readonly LevelProgression levelProgression = new();
+    private HeroMage hero;
+    private MonsterGoblin? monster;
+    private bool isFighting = false;
+    
+    // Map component properties
+    private const int GridSize = 10;
+    private ElementReference gridRef;
+    private bool isGameOver = false;
+    private List<Monster> monsters = new();
+    private List<LifeFountain> fountains = new();
+    private Random random = new();
+    private DateTime lastMovementTime = DateTime.MinValue;
+    private readonly TimeSpan debounceDelay = TimeSpan.FromMilliseconds(100);
+    
+    // Fight component methods
+    private void HeroAttack()
+    {
+        if (hero != null && monster != null)
+        {
+            // hero.Cast_BaseAttack(monster, null);
+            // hero.Cast_FrostSpikes(monster, null);
+            // hero.Cast_ArcaneShield(StateHasChanged);
+            hero.Cast_MeteorBlast(monster, null);
+            
+            if (monster.CurrentHealthValue <= 0)
+            {
+                EndFight(); // Ends fight when monster is killed
+            }
+            
+            StateHasChanged();
+        }
     }
 
-    private void HandleKeyDown(KeyboardEventArgs e)
+    // Manages the monsters' attacks
+    private void MonsterAttack()
     {
+        if (monster != null && hero != null)
+        {
+            monster.Cast_BaseAttack(hero, GameOver);
+            StateHasChanged();
+        }
+    }
+
+    private void GameOver()
+    {
+        isGameOver = true;
+    }
+    
+    // Manages the end of the fight
+    private async void EndFight()
+    {
+        // Remove actual monster from list
+        if (monster != null)
+        {
+            var monsterToRemove = monsters.FirstOrDefault(m => m.X == hero.X && m.Y == hero.Y);
+            if (monsterToRemove != null)
+            {
+                monsters.Remove(monsterToRemove);
+            }
+        }
+        
+        isFighting = false; // Turns off combat UI
+        monster = null;         // Reinitialize monster
+        await gridRef.FocusAsync(); // Makes the focus on the map
+        StateHasChanged();  // Updates UI
+    }
+    
+    // Map component methods
+    
+    // Generates entities at random location on the map
+    private void GenerateEntities()
+    {
+        monsters.Clear(); // Clears monsters list
+        fountains.Clear(); // Clears fountains list
+
+        // Generates 5 monsters at random location
+        for (int i = 0; i < 5; i++)
+        {
+            (int x, int y) = GetRandomPosition();
+            monsters.Add(new MonsterGoblin(x, y));
+        }
+
+        // Generates 3 fountains at random location
+        for (int i = 0; i < 3; i++)
+        {
+            (int x, int y) = GetRandomPosition();
+            fountains.Add(new LifeFountain(x, y));
+        }
+    }
+
+    private (int X, int Y) GetRandomPosition()
+    {
+        (int X, int Y) position;
+        do
+        {
+            position = (random.Next(0, GridSize), random.Next(0, GridSize));
+        } while (
+            monsters.Any(m => m.X == position.X && m.Y == position.Y) ||
+            fountains.Any(f => f.X == position.X && f.Y == position.Y) ||
+            (position.X == hero.X && position.Y == hero.Y));
+        return position;
+    }
+
+    // Manages the keys' events
+    private async void HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (isFighting) return; // Player stays still on the map when fighting
+        
+        var now = DateTime.Now;
+        if (now - lastMovementTime < debounceDelay) return; // Ignores if too quick
+
         if (e.Key.StartsWith("Arrow"))
         {
-            string direction = e.Key.Replace("Arrow", ""); // Extrait "Up", "Down", "Left", ou "Right"
-            player.Move(direction, GridSize);
-            StateHasChanged(); // Met à jour l'affichage
+            string direction = e.Key.Replace("Arrow", ""); // Extract "Up", "Down", "Left", or "Right"
+            hero.Move(direction, GridSize);
+            CheckInteractions();    
+            lastMovementTime = now; // Updates th last movement time
+            await Task.Delay(50); // Delay before triggering new update
+            StateHasChanged(); // Updates UI after delay
         }
+    }
+
+    // Checks interactions of hero with entities on map
+    private void CheckInteractions()
+    {
+        var playerPosition = (hero.X, hero.Y);
+
+        // Interaction with a monster
+        var monster = monsters.FirstOrDefault(m => (m.X, m.Y) == playerPosition);
+        if (monster != null)
+        {
+            // Create new monster
+            this.monster = new MonsterGoblin(hero.X, hero.Y); // Pass hero's X, Y coordinates
+            this.monster.CalculateLevel(hero.Level); // CalculateLevel adjusts monster's level based on hero's level
+            isFighting = true; // Turns on combat UI
+        }
+
+        // Interaction with a fountain
+        var fountain = fountains.FirstOrDefault(f => (f.X, f.Y) == playerPosition);
+        if (fountain != null)
+        {
+            LifeFountain.HealPlayer(hero);
+            fountains.Remove(fountain);
+        }
+    }
+
+    // Restarts a new game
+    private async void RestartGame()
+    {
+        isFighting = false;
+        hero = new HeroMage("Ariana", levelProgression);
+        GenerateEntities();
+        isGameOver = false; // Turns off the game over popup
+        await gridRef.FocusAsync(); // Makes the focus on the map
+    }
+    
+    // Keep focus on the map ++ prevents page scrolling with arrow keys
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await gridRef.FocusAsync();
+            await JSRuntime.InvokeVoidAsync("preventArrowScroll");
+        }
+    }
+    
+    // OnInitialized method
+    protected override void OnInitialized()
+    {
+        // Initialize hero
+        hero = new HeroMage("Ariana", levelProgression);
+        
+        // Initialize map
+        GenerateEntities(); // Initialize the map with foes and life fountains
     }
 }

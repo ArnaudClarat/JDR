@@ -27,6 +27,22 @@
         <a class="dismiss">🗙</a>
     </div>
     <script src="_framework/blazor.webassembly.js"></script>
+    
+    <script> // Keeps the console updated by scrolling automatically
+        window.scrollToBottom = (element) => {
+            element.scrollTop = element.scrollHeight;
+        };
+    </script>
+    
+    <script> // Prevent key arrows to scroll the page while playing the game
+        window.preventArrowScroll = function () {
+            window.addEventListener('keydown', function (e) {
+                if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+                    e.preventDefault();
+                }
+            });
+        };
+    </script>
 </body>
 
 </html>

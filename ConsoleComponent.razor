@@ -1,0 +1,41 @@
+@inject LogService LogService
+@inject IJSRuntime JS
+
+<div class="console" @ref="consoleRef">
+    @foreach (var log in LogService.GetLogs())
+    {
+    <div class="log-entry">@log</div>
+    }
+</div>
+
+@code {
+    private ElementReference consoleRef;  // Ref to console
+
+    protected override void OnInitialized()
+    {
+        LogService.OnLogUpdated += UpdateLogs;
+    }
+
+    private async void UpdateLogs()
+    {
+        // Update UI
+        StateHasChanged();
+        
+        // Waits update to scroll
+        await Task.Delay(100);
+        
+        // Calls async method after StateHasChanged invoke
+        await ScrollToBottom();
+    }
+
+    private async Task ScrollToBottom()
+    {
+        // Calls JS function to scroll console to bottom
+        await JS.InvokeVoidAsync("scrollToBottom", consoleRef);
+    }
+
+    public void Dispose()
+    {
+        LogService.OnLogUpdated -= UpdateLogs;
+    }
+}

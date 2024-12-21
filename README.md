@@ -3,6 +3,7 @@ Jeu de Rôle créé dans le cadre du cours de POO
 
 
 Liste base : 
+
     Un héro :
     - Point de vie (+-20PV)
     - Une attaque
