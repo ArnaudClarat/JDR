@@ -2,16 +2,10 @@
 
 namespace JDR.Models
 {
-    public class LifeFountain
+    public class LifeFountain(int x, int y)
     {
-        public int X { get; set; }
-        public int Y { get; set; }
-        
-        public LifeFountain(int x, int y)
-        {
-            X = x;
-            Y = y;
-        }
+        public int X { get; set; } = x;
+        public int Y { get; set; } = y;
 
         // Heals the Hero when it touches the fountain
         public static void HealPlayer(Hero hero)
@@ -23,7 +17,7 @@ namespace JDR.Models
 
             Console.WriteLine($"You touched a Life Fountain ! All of your mana has been restored ! ");
             hero.Heal(healAmount);
-            hero.EnergyValue = hero.MaxEnergyValue;
+            hero.CurrentEnergyValue = hero.MaxEnergyValue;
         }
     }
 }

@@ -7,13 +7,13 @@ namespace JDR.Models
         public int RollResult { get; protected set; }
         public int X { get; set; }
         public int Y { get; set; }
-        public string CharacterName { get; set; }
+        public string Name { get; set; }
         public int Level { get; set; }
-        internal bool IsDead { get; set; }
+        public int CriticalChance { get; set; }
         public int MaxHealthValue { get; set; }
         public int CurrentHealthValue { get; set; }
         public int MaxEnergyValue { get; set; }
-        public int EnergyValue { get; set; }
+        public int CurrentEnergyValue { get; set; }
         public int AttackValue { get; set; }
         public int ArmorValue { get; set; }
         public double CriticalHitFactor { get; set; }
@@ -22,22 +22,19 @@ namespace JDR.Models
             int x,
             int y,
             string characterName,
-            bool isDead,
             double criticalHitFactor = 1.72
             )
         {
             X = x;
             Y = y;
-            CharacterName = characterName;
-            IsDead = isDead;
+            Name = characterName;
             CriticalHitFactor = criticalHitFactor;
         }
         
         // The base attack
-        public virtual void Cast_BaseAttack(Character target, Action gameOverAction)
+        public virtual void BaseAttack(Character target, Action gameOverAction)
         {
-            if (target.IsDead)
-                return;
+            if (target.CurrentHealthValue == 0) { return; }
 
             int baseDamage = AttackValue - target.ArmorValue;
             int damage = baseDamage <= 0 ? 0 : baseDamage;
@@ -67,8 +64,7 @@ namespace JDR.Models
         public void Die(Character attacker, Action gameOverAction)
         {
             CurrentHealthValue = 0;
-            IsDead = true;
-            Console.WriteLine($"{CharacterName} has died !");
+            Console.WriteLine($"{Name} has died !");
             
             if (attacker is Hero heroAttacker)
             {
@@ -79,6 +75,13 @@ namespace JDR.Models
             {
                 gameOverAction.Invoke();
             }
+        }
+
+        // Decides if the attack is a critical hit
+        public int CriticalHit(int baseDamage, out bool isCritical)
+        {
+            isCritical = rand.Next(1, 101) <= CriticalChance; // Return true if the roll result is in the range of the CriticalChance value
+            return isCritical ? (int)(baseDamage * CriticalHitFactor) : baseDamage; // if result is true then crit damage, else base damage
         }
     }
 }

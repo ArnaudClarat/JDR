@@ -1,0 +1,159 @@
+@using JDR.Models
+@inject IJSRuntime JSRuntime
+
+<div
+    class="grid"
+    tabindex="0"
+    @onkeydown="HandleKeyDown"
+    @ref="gridRef"
+    autofocus>
+    @if (map != null)
+    {
+        @try
+        {
+            @for (int row = 0; row < map.RowCount; row++)
+            {
+                @for (int col = 0; col < map.ColCount; col++)
+                {
+                    var cellContent = map.RenderCell(col, row);
+                    <div class="cell @cellContent"></div>
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            <p>Error rendering map: @ex.Message</p>
+        }
+    }
+</div>
+
+@code {
+    [Parameter] public Hero Hero { get; set; } = null!;
+    [Parameter] public bool HeroCreated { get; set; }
+    [Parameter] public EventCallback<Hero> OnHeroStatsUpdated { get; set; }
+    [Parameter] public EventCallback<Monster> OnFight { get; set; } // Get infos of the monster for the fight
+    [Parameter] public EventCallback<bool> OnFightStateChange { get; set; } // Notifies state of isFighting in Home.razor (true/false)
+    [Parameter] public Func<bool>? IsFighting { get; set; }
+    
+    private Map map;
+    private ElementReference gridRef;
+    private DateTime lastMovementTime = DateTime.MinValue;
+    private readonly TimeSpan debounceDelay = TimeSpan.FromMilliseconds(100);
+    private Monster? monster; // The monster actually fighted
+    private bool isFighting;
+    private List<Monster> monsters = new();
+    private List<LifeFountain> fountains = new();
+
+    protected override void OnInitialized()
+    {
+        try
+        {
+            if (HeroCreated)
+            {
+                map = new Map(10, 10, Hero); // 10x10 Grid
+                monsters = map.Monsters;
+                fountains = map.Fountains;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error during map initialization: {ex.Message}");
+        }
+    }
+    
+    // Keep focus on the map ++ prevents page scrolling with arrow keys
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && HeroCreated)
+        {
+            await JSRuntime.InvokeVoidAsync("preventArrowScroll");
+            if (gridRef.Context != null)
+            {
+                await gridRef.FocusAsync();
+            }
+        }
+    }
+
+    // Manages the keys' events
+    private void HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (!HeroCreated || (IsFighting != null && IsFighting.Invoke())) return; // Keys have no effect if the hero has not been created yet or when fighting
+
+        var now = DateTime.Now;
+        if (now - lastMovementTime < debounceDelay) return; // Ignores if too quick
+
+        if (e.Key.StartsWith("Arrow"))
+        {
+            string direction = e.Key.Replace("Arrow", ""); // Extract "Up", "Down", "Left", or "Right"
+            if (map.IsInsideMap(Hero.X, Hero.Y))
+            {
+                Hero.Move(direction, map.RowCount, map.ColCount);
+            }
+            CheckInteractions();
+            lastMovementTime = now; // Updates the last movement time
+        }
+    }
+    
+    // Checks interactions of hero with entities on map
+    private void CheckInteractions()
+    {
+        var playerPosition = (Hero.X, Hero.Y);
+
+        // Interaction with a monster
+        monster = map.Monsters.FirstOrDefault(m => (m.X, m.Y) == playerPosition);
+        if (monster != null)
+        {
+            OnFight.InvokeAsync(monster);
+            OnFightStateChange.InvokeAsync(true);
+            StateHasChanged();
+            return;
+        }
+
+        // Interaction with a fountain
+        var fountain = map.Fountains.FirstOrDefault(f => (f.X, f.Y) == playerPosition);
+        if (fountain != null)
+        {
+            LifeFountain.HealPlayer(Hero);
+            map.Fountains.Remove(fountain);
+            OnHeroStatsUpdated.InvokeAsync(Hero);
+            StateHasChanged();
+        }
+    }
+    
+    // Manages the start of the fight
+    private void StartFight(Monster monster)
+    {
+        this.monster = monster;
+        isFighting = true;
+        
+        if (OnFightStateChange.HasDelegate)
+        {
+            OnFightStateChange.InvokeAsync(true); // Lets Home.razor know the fight is beginning
+        }
+
+        StateHasChanged();
+    }
+    
+    // Manages the end of the fight
+    internal async void EndFight()
+    {
+        // Remove actual monster from list
+        if (monster != null)
+        {
+            var monsterToRemove = monsters.FirstOrDefault(m => m.X == Hero.X && m.Y == Hero.Y);
+            if (monsterToRemove != null)
+            {
+                monsters.Remove(monsterToRemove);
+            }
+        }
+        
+        isFighting = false; // Turns off combat UI
+        monster = null;         // Reinitialize monster
+        if (OnFightStateChange.HasDelegate)
+        {
+            await OnFightStateChange.InvokeAsync(false); // Lets Home.razor know the fight is finished
+        }
+        await gridRef.FocusAsync(); // Makes the focus on the map
+        StateHasChanged();  // Updates UI
+    }
+}

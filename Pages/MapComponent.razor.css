@@ -1,0 +1,61 @@
+.grid {
+    display: grid;
+    grid-template-rows: repeat(10, 64px);
+    grid-template-columns: repeat(10, 64px);
+    gap: 2px;
+    width: 100%;
+    max-width: 658px;
+    outline: 2px solid black; /* Remove outline on focus */
+    margin: 0 auto;
+}
+
+.cell {
+    width: 64px;
+    height: 64px;
+    background-color: lightgray;
+    border: 1px solid #ddd;
+}
+
+@keyframes spriteAnimation {
+    from {
+        background-position: 0px;
+    }
+
+    to {
+        background-position: -384px;
+    }
+    /* 64px x 6 frames */
+}
+
+.sprite {
+    width: 64px; /* width of frame */
+    height: 64px; /* height of frame */
+    background-image: url('./images/Run-Sheet.png');
+    background-repeat: no-repeat;
+    animation: spriteAnimation 0.8s steps(6) infinite;
+    transform-origin: center center;
+}
+
+.Right {
+    transform: scaleX(1);
+}
+
+.Left {
+    transform: scaleX(-1);
+}
+
+.monster {
+    background-color: #d9534f;
+}
+
+.boss {
+    background-color: #444444;
+}
+
+.fountain {
+    background-color: lightblue;
+    background-image: url('./images/fountain.gif');
+    background-repeat: no-repeat;
+    background-size: 50px;
+    background-position: center;
+}

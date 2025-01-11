@@ -4,6 +4,7 @@ using System;
 using System.Text;
 using System.Net.Http;
 using JDR;
+using JDR.Models;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");

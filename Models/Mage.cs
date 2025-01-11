@@ -3,12 +3,12 @@ using System.Threading.Tasks;
 
 namespace JDR.Models
 {
-    public class HeroMage : Hero
+    public class Mage : Hero
     {
-        public HeroMage(
+        public Mage(
             string characterName,
             LevelProgression progression,
-            int level = 2,
+            int level = 1,
             int experienceValue = 0,
             int energyValue = 40,
             int armorValue = 2,
@@ -20,7 +20,7 @@ namespace JDR.Models
         {
             Level = level;
             ExperienceValue = experienceValue;
-            EnergyValue = energyValue;
+            CurrentEnergyValue = energyValue;
             ArmorValue = armorValue;
             BonusDamage = bonusDamage;
             CriticalChance = criticalChance;
@@ -39,8 +39,8 @@ namespace JDR.Models
             Spirit = StatsCalculator.CalculateStat(3, 1.15, Level);
             CurrentHealthValue = Stamina * 10;
             MaxHealthValue = CurrentHealthValue;
-            EnergyValue = (int)Math.Round(EnergyValue * (Spirit * 0.65));
-            MaxEnergyValue = EnergyValue;
+            CurrentEnergyValue = (int)Math.Round(CurrentEnergyValue * (Spirit * 0.65));
+            MaxEnergyValue = CurrentEnergyValue;
             AttackValue = (int)Math.Round(Intellect * 1.8);
         }
     
@@ -51,31 +51,19 @@ namespace JDR.Models
             InitializeStats(); // Updates stats after level up
         }
     
-        // Decides if the attack is a critical hit
-        public int CriticalHit(int baseDamage, out bool isCritical)
-        {
-            RollResult = rand.Next(1, 101);
-            isCritical = RollResult <= CriticalChance; // Return true if the roll result is in the range of the CriticalChance value
-            int damage = isCritical ? (int)Math.Round(baseDamage * CriticalHitFactor) : baseDamage; // if result is true then crit damage, else base damage
-        
-            return damage;
-        }
-    
         // The base attack
-        public override void Cast_BaseAttack(Character target, Action restartGameAction)
+        public override void BaseAttack(Character target, Action restartGameAction)
         {
-            if (target.IsDead || EnergyValue < 2)
-                return;
+            if (target.CurrentHealthValue == 0 || CurrentEnergyValue < 2) { return; }
         
-            EnergyValue -= 2;
+            CurrentEnergyValue -= 2;
             int baseDamage = AttackValue - target.ArmorValue;
             int damage = baseDamage <= 0 ? 0 : baseDamage;
-        
-            bool isCritical;
-            int calculatedDamage = CriticalHit(damage, out isCritical);
-        
+
+            int calculatedDamage = CriticalHit(damage, out bool isCritical);
+
             string message = isCritical ? "Critical hit! " : "";
-            message += $"Base attack from {CharacterName} dealt {calculatedDamage} damage to {target.CharacterName}.";
+            message += $"Base attack from {Name} dealt {calculatedDamage} damage to {target.Name}.";
 
             Console.WriteLine(message);
         
@@ -83,20 +71,18 @@ namespace JDR.Models
         }
 
         // Low tier spell
-        public void Cast_FrostSpikes(Character target, Action restartGameAction)
+        public override void LowTierAttack(Character target, Action restartGameAction)
         {
-            if (target.IsDead || EnergyValue < 6)
-                return;
-        
-            EnergyValue -= 6;
+            if (target.CurrentHealthValue == 0 || CurrentEnergyValue < 6) { return; }
+       
+            CurrentEnergyValue -= 6;
             int baseDamage = (int)Math.Round((AttackValue - target.ArmorValue) * 2.4);
             int damage = baseDamage <= 0 ? 0 : baseDamage;
         
-            bool isCritical;
-            int calculatedDamage = CriticalHit(damage, out isCritical);
+            int calculatedDamage = CriticalHit(damage, out bool isCritical);
         
             string message = isCritical ? "Critical hit! " : "";
-            message += $"Frost Spikes from {CharacterName} dealt {calculatedDamage} damage to {target.CharacterName}.";
+            message += $"Frost Spikes from {Name} dealt {calculatedDamage} damage to {target.Name}.";
 
             Console.WriteLine(message);
         
@@ -104,41 +90,38 @@ namespace JDR.Models
         }
 
         // Mid tier spell
-        public async void Cast_ArcaneShield(Action refreshUI)
+        public override async void MidTierAttack(Character target, Action refreshUI)
         {
-            if (IsDead || EnergyValue < 4)
-                return;
+            if (CurrentHealthValue == 0 || CurrentEnergyValue < 4) {  return; }
 
-            EnergyValue -= 4;
-            int originalArmorValue = ArmorValue;
-            ArmorValue *= 4;
+            CurrentEnergyValue -= 4;
+            int originalArmorValue = target.ArmorValue;
+            target.ArmorValue *= 4;
 
-            Console.WriteLine($"{CharacterName} casts Arcane Shield! Armor value increased temporarily.");
+            Console.WriteLine($"{target.Name} casts Arcane Shield! Armor value increased temporarily.");
             refreshUI?.Invoke();  // Forces the UI to refresh after casting the spell
 
             // Delay before stat returns to original value
             await Task.Delay(4000);
 
-            ArmorValue = originalArmorValue;
-            Console.WriteLine($"{CharacterName}'s Arcane Shield has worn off. Armor value returns to normal.");
+            target.ArmorValue = originalArmorValue;
+            Console.WriteLine($"{target.Name}'s Arcane Shield has worn off. Armor value returns to normal.");
             refreshUI?.Invoke();  // Forces the UI to refresh after the spell has no more effect
         }
 
         // Ultimate spell
-        public void Cast_MeteorBlast(Character target, Action restartGameAction)
+        public override void UltimateAttack(Character target, Action restartGameAction)
         {
-            if (target.IsDead || EnergyValue < 18)
-                return;
+            if (target.CurrentHealthValue == 0 || CurrentEnergyValue < 18) { return; }
         
-            EnergyValue -= 18;
+            CurrentEnergyValue -= 18;
             int baseDamage = (int)Math.Round((AttackValue - target.ArmorValue) * 6.9);
             int damage = baseDamage <= 0 ? 0 : baseDamage;
         
-            bool isCritical;
-            int calculatedDamage = CriticalHit(damage, out isCritical);
+            int calculatedDamage = CriticalHit(damage, out bool isCritical);
         
             string message = isCritical ? "Critical hit! " : "";
-            message += $"Meteor Blast from {CharacterName} dealt {calculatedDamage} damage to {target.CharacterName}.";
+            message += $"Meteor Blast from {Name} dealt {calculatedDamage} damage to {target.Name}.";
 
             Console.WriteLine(message);
         
