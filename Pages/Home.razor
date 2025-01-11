@@ -85,6 +85,8 @@
                                 cellContent = "monster";
                             else if (fountains.Any(m => m.X == col && m.Y == row))
                                 cellContent = "fountain";
+                            else if (treasure.Any(m => m.X == col && m.Y == row))
+                                cellContent = "treasure";
                             <div class="cell @cellContent"></div>
                         }
                     }
@@ -150,12 +152,19 @@
     private string CharacterName;
     private string CharacterClass;
 
+    // Treasure component properties
+
+    private WeaponType weaponType;
+    private MaterialWeapon materialRandom;
+    private MaterialWeapon materialType;
+
     // Map component properties
     private const int GridSize = 10;
     private ElementReference gridRef;
     private bool isGameOver = false;
     private List<Monster> monsters = new();
     private List<LifeFountain> fountains = new();
+    private List<Treasure> treasure = new();
     private Random random = new();
     private DateTime lastMovementTime = DateTime.MinValue;
     private readonly TimeSpan debounceDelay = TimeSpan.FromMilliseconds(100);
@@ -224,6 +233,7 @@
     {
         monsters.Clear(); // Clears monsters list
         fountains.Clear(); // Clears fountains list
+        treasure.Clear(); // Clears treasure list
 
         // Generates 5 monsters at random location
         for (int i = 0; i < 5; i++)
@@ -238,6 +248,13 @@
             (int x, int y) = GetRandomPosition();
             fountains.Add(new LifeFountain(x, y));
         }
+
+        // Generates 1 chest at random location
+        for (int i = 0; i < 1; i++)
+        {
+            (int x, int y) = GetRandomPosition();
+            treasure.Add(new Treasure(x, y));
+        }
     }
 
     private (int X, int Y) GetRandomPosition()
@@ -249,6 +266,7 @@
         } while (
             monsters.Any(m => m.X == position.X && m.Y == position.Y) ||
             fountains.Any(f => f.X == position.X && f.Y == position.Y) ||
+            treasure.Any(f => f.X == position.X && f.Y == position.Y) ||
             (position.X == hero.X && position.Y == hero.Y)
         );
         return position;
@@ -290,6 +308,14 @@
         {
             LifeFountain.HealPlayer(hero);
             fountains.Remove(fountain);
+            StateHasChanged();
+        }
+                // Interaction with a chest
+        var chest = treasure.FirstOrDefault(f => (f.X, f.Y) == playerPosition);
+        if (chest != null)
+        {
+            Treasure.FoundChest(hero);
+            treasure.Remove(chest);
             StateHasChanged();
         }
     }

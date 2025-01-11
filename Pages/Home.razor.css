@@ -1,3 +1,109 @@
+@media screen and (max-width: 768px) {
+    #game-container {
+        flex-direction: column;
+    }
+
+    #left-panel, #center-panel, #right-panel {
+        width: 100%;
+        max-width: 100%;
+        min-width: 100%;
+    }
+    
+    #center-panel {
+        margin: 10px;
+    }
+
+    .grid {
+        max-width: 100%;
+    }
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+/* Main container */
+#game-container {
+    display: flex;
+    width: 100%;
+    max-width: 1500px;
+    margin: 20px auto;
+    box-sizing: border-box;
+    flex-wrap: wrap;
+}
+
+/* Left panel */
+#left-panel {
+    width: 20%;
+    min-width: 260px;
+    max-width: 20%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Center panel */
+#center-panel {
+    width: 55%;
+    min-width: 658px;
+    max-width: 55%;
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    justify-content: flex-start;
+    position: relative;
+}
+
+/* Right panel */
+#right-panel {
+    width: 25%;
+    min-width: 200px;
+    max-width: 25%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow: hidden;
+    min-height: 100%;
+}
+
+/* Allows content above #console to occupy available space */
+#right-panel > *:not(#console) {
+    flex: 1;
+    overflow-y: auto; /* Adds scrollbar if overflow */
+}
+
+/* Pushes #console to the bottom */
+#console {
+    margin-top: auto;
+}
+
+.grid {
+    display: grid;
+    grid-template-rows: repeat(10, 64px);
+    grid-template-columns: repeat(10, 64px);
+    gap: 2px;
+    width: 100%;
+    max-width: 658px;
+    outline: 2px solid black; /* Remove outline on focus */
+    margin: 0 auto;
+}
+
+.grid-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6); /* 60% transparency black, modify if too light or too dark */
+    pointer-events: none; /* Let events play */
+    z-index: 10; /* Place overlay over the map */
+}
+
 .popup-overlay {
     position: fixed;
     top: 0;
@@ -11,11 +117,19 @@
     z-index: 1000;
 }
 
+.cell {
+    width: 64px;
+    height: 64px;
+    background-color: lightgray;
+    border: 1px solid #ddd;
+}
+
 .popup {
     background-color: white;
     padding: 20px;
     border-radius: 10px;
     text-align: center;
+    color: black;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
 }
 
@@ -23,3 +137,113 @@
     margin-top: 10px;
 }
 
+@keyframes spriteAnimation {
+    from {
+        background-position: 0px;
+    }
+
+    to {
+        background-position: -384px;
+    }
+    /* 64px x 6 frames */
+}
+
+.sprite {
+    width: 64px; /* width of frame */
+    height: 64px; /* height of frame */
+    background-image: url('./images/Run-Sheet.png');
+    background-repeat: no-repeat;
+    animation: spriteAnimation 0.8s steps(6) infinite;
+    transform-origin: center center;
+}
+
+.Right {
+    transform: scaleX(1);
+}
+
+.Left {
+    transform: scaleX(-1);
+}
+
+#header {
+    width: 100%;
+    background-color: #1a1e21;
+    text-align: center;
+    padding: 10px 0;
+}
+
+#center-panel-characterstats {
+    text-align: center;
+    width: 100%;
+    margin: 10px;
+}
+
+.monster {
+    background-color: #d9534f;
+}
+
+.fountain {
+    background-color: lightblue;
+    background-image: url('./images/fountain.gif');
+    background-repeat: no-repeat;
+    background-size: 50px;
+    background-position: center;
+}
+
+@keyframes treasureAnimation {
+    from {
+        background-position: 0;
+    }
+    to {
+        background-position: -189px; /* Largeur totale de l'image */
+    }
+}
+
+.treasure {
+    width: 64px; /* Largeur d'une frame */
+    height: 64px; /* Hauteur d'une frame */
+    background-image: url('./images/Chest.png'); /* Chemin vers ton sprite */
+    background-repeat: no-repeat;
+    animation: treasureAnimation 0.8s steps(3) infinite;
+    transform-origin: center center;
+}
+
+#hero-stats h4:first-of-type, #hero-inventory h4, #fight h4:first-of-type {
+    margin: 0 0 8px 15px;
+}
+
+#hero-stats, #hero-inventory {
+    margin: 0;
+}
+
+#fight {
+    margin: 0;
+}
+
+#hero-stats .stats h4, #fight .hero h4, #fight .opponent h4 {
+    margin-left: 0;
+    padding-left: 0;
+}
+
+.fight-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.stats, .inventory, .hero, .opponent {
+    padding: 10px;
+    border: 2px solid #f00;
+}
+
+.stats p, .inventory p, .hero p, .opponent p {
+    margin-bottom: 10px;
+}
+
+.btn-danger {
+    margin: 5px;
+}
+
+button:focus {
+    outline: 2px solid #0063d6;
+}
