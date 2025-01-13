@@ -153,7 +153,6 @@
     private string CharacterClass;
 
     // Treasure component properties
-    private Hero? level;
     private WeaponType weaponType;
     private MaterialWeapon materialRandom;
     private MaterialWeapon materialType;
@@ -250,7 +249,7 @@
         }
 
         // Generates 1 chest at random location
-        for (int i = 0; i < 20; i++)
+        for (int i = 0; i < 1; i++)
         {
             (int x, int y) = GetRandomPosition();
             treasure.Add(new Treasure(x, y));
@@ -314,7 +313,7 @@
         var chest = treasure.FirstOrDefault(f => (f.X, f.Y) == playerPosition);
         if (chest != null)
         {
-            Treasure.FoundChest(1, weaponType, hero, materialRandom, materialType);
+            Treasure.FoundChest(hero);
             treasure.Remove(chest);
             StateHasChanged();
         }

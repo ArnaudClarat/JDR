@@ -11,18 +11,29 @@ namespace JDR.Models
         public WeaponType WeaponType {get; set; }
         public MaterialWeapon MaterialRandom {get; set; }
         public int Damage {get; private set; }
-        public double Speed {get; private set; }
-        public double Weight {get; private set; }
+        private double speed;
+        public double Speed
+        {
+            get { return speed; }
+            set { speed = Math.Round(value, 2); }
+        }
+        
+        private double weight;
+        public double Weight
+        {
+            get { return weight; }
+            set { weight = Math.Round(value, 2); }
+        }
+        
         
         private static Random random = new Random();
 
         public Weapon (string name, Hero hero)
         {
             Name = name;
-            WeaponType = SetWeaponType();
             MaterialRandom = MaterialChance(hero.Level);
             MaterialType = MaterialRandom;
-            SetAttributes(MaterialType);
+            WeaponType = SetWeaponType();
         }
 
         // Selection aléatoire du type d'arme
@@ -167,7 +178,7 @@ namespace JDR.Models
         public override string ToString()
         {
             return $"{Name} de type {WeaponType}, fabriquée en {MaterialType} ! \n" +
-            $"Dégâts : {Damage}, Vitesse : {Speed}, Poids : {Weight}";
+            $"Dégâts : {Damage} | Vitesse : {Speed} | Poids : {Weight}";
         }
 
         // public WeaponType GetMaterialTypes()

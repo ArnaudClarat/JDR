@@ -7,14 +7,14 @@ namespace JDR.Models
         public int Y { get; set; } = y;
         private static Random random = new Random();
 
-        public static void FoundChest(int level, WeaponType weaponType, Hero hero, MaterialWeapon materialRandom, MaterialWeapon materialType)
+        public static void FoundChest(Hero hero)
         {
             Console.WriteLine($"Bravo {hero.Name}, tu as trouvé un coffre");
-            RandomItem(level, weaponType, hero, materialRandom, materialType);
+            RandomItem(hero);
         }
-       public static void RandomItem(int level, WeaponType weaponType, Hero hero, MaterialWeapon materialRandom, MaterialWeapon materialType)
+       public static void RandomItem(Hero hero)
         {
-            int roll = random.Next(1,2); // 50% chance to have armor or weapon
+            int roll = random.Next(1,3); // 50% chance to have armor or weapon
 
             if (roll == 1) // 50% chance to have weapon
             {
@@ -23,7 +23,8 @@ namespace JDR.Models
             }
             else if (roll == 2) // 50% chance to have armor
             {
-                Console.WriteLine("Vous avez trouvé une armure qui n'est pas encore en place");
+                Armor new_armor = new Armor("armure", hero);
+                Console.WriteLine("Vous avez trouvé une " + new_armor);
             }
             else
             {
@@ -31,11 +32,5 @@ namespace JDR.Models
                 return;
             }
         }
-        // public void GetRandomTreasure(int level)
-        // {
-        //     MaterialWeapon material = MaterialChance(level);
-        //     WeaponType weaponsType = GetMaterialTypes();
-        //     return new Weapon(material, weaponsType);
-        // }
     }
 }
