@@ -9,7 +9,7 @@ namespace JDR.Models
 
         public static void FoundChest(Hero hero)
         {
-            Console.WriteLine($"Bravo {hero.Name}, tu as trouvé un coffre");
+            Console.WriteLine($"Yay ! {hero.Name} has found a chest !");
             RandomItem(hero);
         }
        public static void RandomItem(Hero hero)
@@ -19,16 +19,16 @@ namespace JDR.Models
             if (roll == 1) // 50% chance to have weapon
             {
                 Weapon new_weapon = new Weapon("arme", hero);
-                Console.WriteLine("Vous avez trouvé une " + new_weapon);
+                Console.WriteLine($"You have found a {new_weapon}.");
             }
             else if (roll == 2) // 50% chance to have armor
             {
                 Armor new_armor = new Armor("armure", hero);
-                Console.WriteLine("Vous avez trouvé une " + new_armor);
+                Console.WriteLine($"You have found a {new_armor}.");
             }
             else
             {
-                Console.WriteLine("Petit bug dans le programme, dsl loulou ta pas d'item 🖕");
+                Console.WriteLine("Item not found.");
                 return;
             }
         }
