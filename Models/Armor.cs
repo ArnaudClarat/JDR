@@ -1,7 +1,7 @@
 namespace JDR.Models
 {
 
-    public enum MaterialArmor {tissu, cuir, bois, métal, or}
+    public enum MaterialArmor {cloth, leather, wooden, metal, golden}
 
     public class Armor
     {
@@ -79,7 +79,7 @@ namespace JDR.Models
                     return MaterialArmor.or;                      // 25% or
 
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(level), "Niveau invalide !");
+                    throw new ArgumentOutOfRangeException(nameof(level), "Invalid level !");
             }
         }
         private void SetAttributes(MaterialArmor MaterialType)
@@ -119,8 +119,8 @@ namespace JDR.Models
         }
         public override string ToString()
         {
-            return $"{Name}, fabriquée en {MaterialType} ! \n" +
-            $"Défense : {BaseDefense} | Poids : {Weight}";
+            return $"{Name}, made out of {MaterialType} ! \n" +
+            $"Defense : {BaseDefense} | Weight : {Weight}";
         }
     }
 }
