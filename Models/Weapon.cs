@@ -78,54 +78,54 @@ namespace JDR.Models
 
             switch(level)
             {
-                case 1 :
-                    if (roll <=50) return MaterialWeapon.bois;
-                    if (roll <=80) return MaterialWeapon.pierre;
-                    if (roll <=90) return MaterialWeapon.os;
-                    if (roll <=95) return MaterialWeapon.métal;
-                    return MaterialWeapon.or;
+                case 1: // Niveau 1
+                    if (roll <= 70) return MaterialWeapon.bois;    // 70% bois
+                    if (roll <= 87) return MaterialWeapon.pierre;  // 17% pierre
+                    if (roll <= 95) return MaterialWeapon.os;      // 8% os
+                    if (roll <= 99) return MaterialWeapon.métal;   // 4% métal
+                    return MaterialWeapon.or;                     // 1% or
 
-                case 2 : 
-                    if (roll <=50) return MaterialWeapon.bois;
-                    if (roll <=80) return MaterialWeapon.pierre;
-                    if (roll <=90) return MaterialWeapon.os;
-                    if (roll <=95) return MaterialWeapon.métal;
-                    return MaterialWeapon.or;
+                case 2: // Niveau 2
+                    if (roll <= 50) return MaterialWeapon.bois;    // 50% bois
+                    if (roll <= 75) return MaterialWeapon.pierre;  // 25% pierre
+                    if (roll <= 90) return MaterialWeapon.os;      // 15% os
+                    if (roll <= 98) return MaterialWeapon.métal;   // 8% métal
+                    return MaterialWeapon.or;                     // 2% or
 
-                case 3 : 
-                    if (roll <=50) return MaterialWeapon.bois;
-                    if (roll <=80) return MaterialWeapon.pierre;
-                    if (roll <=90) return MaterialWeapon.os;
-                    if (roll <=95) return MaterialWeapon.métal;
-                    return MaterialWeapon.or;
+                case 3: // Niveau 3
+                    if (roll <= 40) return MaterialWeapon.bois;    // 40% bois
+                    if (roll <= 65) return MaterialWeapon.pierre;  // 25% pierre
+                    if (roll <= 85) return MaterialWeapon.os;      // 20% os
+                    if (roll <= 95) return MaterialWeapon.métal;   // 10% métal
+                    return MaterialWeapon.or;                     // 5% or
 
-                case 4 : 
-                    if (roll <=50) return MaterialWeapon.bois;
-                    if (roll <=80) return MaterialWeapon.pierre;
-                    if (roll <=90) return MaterialWeapon.os;
-                    if (roll <=95) return MaterialWeapon.métal;
-                    return MaterialWeapon.or;
+                case 4: // Niveau 4
+                    if (roll <= 30) return MaterialWeapon.bois;    // 30% bois
+                    if (roll <= 55) return MaterialWeapon.pierre;  // 25% pierre
+                    if (roll <= 75) return MaterialWeapon.os;      // 20% os
+                    if (roll <= 90) return MaterialWeapon.métal;   // 15% métal
+                    return MaterialWeapon.or;                     // 10% or
 
-                case 5 : 
-                    if (roll <=50) return MaterialWeapon.bois;
-                    if (roll <=80) return MaterialWeapon.pierre;
-                    if (roll <=90) return MaterialWeapon.os;
-                    if (roll <=95) return MaterialWeapon.métal;
-                    return MaterialWeapon.or;
+                case 5: // Niveau 5
+                    if (roll <= 20) return MaterialWeapon.bois;    // 20% bois
+                    if (roll <= 45) return MaterialWeapon.pierre;  // 25% pierre
+                    if (roll <= 65) return MaterialWeapon.os;      // 20% os
+                    if (roll <= 85) return MaterialWeapon.métal;   // 20% métal
+                    return MaterialWeapon.or;                     // 15% or
 
-                case 6 : 
-                    if (roll <=50) return MaterialWeapon.bois;
-                    if (roll <=80) return MaterialWeapon.pierre;
-                    if (roll <=90) return MaterialWeapon.os;
-                    if (roll <=95) return MaterialWeapon.métal;
-                    return MaterialWeapon.or;
+                case 6: // Niveau 6
+                    if (roll <= 10) return MaterialWeapon.bois;    // 10% bois
+                    if (roll <= 30) return MaterialWeapon.pierre;  // 20% pierre
+                    if (roll <= 55) return MaterialWeapon.os;      // 25% os
+                    if (roll <= 80) return MaterialWeapon.métal;   // 25% métal
+                    return MaterialWeapon.or;                     // 20% or
 
-                case >= 7 : 
-                    if (roll <=50) return MaterialWeapon.bois;
-                    if (roll <=80) return MaterialWeapon.pierre;
-                    if (roll <=90) return MaterialWeapon.os;
-                    if (roll <=95) return MaterialWeapon.métal;
-                    return MaterialWeapon.or;
+                case >= 7: // Niveau 7 et plus
+                    if (roll <= 5) return MaterialWeapon.bois;     // 5% bois
+                    if (roll <= 20) return MaterialWeapon.pierre;  // 15% pierre
+                    if (roll <= 45) return MaterialWeapon.os;      // 25% os
+                    if (roll <= 75) return MaterialWeapon.métal;   // 30% métal
+                    return MaterialWeapon.or;                     // 25% or
 
                 default:
                     throw new ArgumentOutOfRangeException(nameof(level), "Niveau invalide !");
