@@ -13,7 +13,7 @@
     width: 64px;
     height: 64px;
     background-color: lightgray;
-    border: 1px solid #ddd;
+    background-image: url('./images/Tileset.png');
 }
 
 @keyframes spriteAnimation {
@@ -30,7 +30,7 @@
 .sprite {
     width: 64px; /* width of frame */
     height: 64px; /* height of frame */
-    background-image: url('./images/Run-Sheet.png');
+    background-image: url('./images/Hero/Hero_Idle.png');
     background-repeat: no-repeat;
     animation: spriteAnimation 0.8s steps(6) infinite;
     transform-origin: center center;
