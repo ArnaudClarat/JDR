@@ -30,9 +30,9 @@
 .sprite {
     width: 64px; /* width of frame */
     height: 64px; /* height of frame */
-    background-image: url('./images/Hero/Hero_Idle.png');
+    background-image: url('./images/Hero/Hero_Walk.png');
     background-repeat: no-repeat;
-    animation: spriteAnimation 0.8s steps(6) infinite;
+    animation: spriteAnimation 0.8s steps(8) infinite;
     transform-origin: center center;
 }
 
@@ -45,7 +45,12 @@
 }
 
 .monster {
-    background-color: #d9534f;
+    width: 64px; /* width of frame */
+    height: 64px; /* height of frame */
+    background-image: url('./images/Hero/Goblin_Idle.png');
+    background-repeat: no-repeat;
+    animation: spriteAnimation 0.8s steps(8) infinite;
+    transform-origin: center center;
 }
 
 .boss {
