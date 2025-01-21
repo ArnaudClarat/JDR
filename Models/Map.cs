@@ -80,7 +80,7 @@ namespace JDR.Models
             else if (Monsters.Any(m => m.X == x && m.Y == y))
             {
                 var monster = Monsters.First(m => m.X == x && m.Y == y); // Finds the right type of monster
-                if (monster.Name == "Dragon")
+                if (monster is Boss)
                 {
                     return "boss";
                 }
