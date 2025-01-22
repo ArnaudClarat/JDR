@@ -21,7 +21,7 @@ namespace JDR.Models
                 {
                     inventory.AddArmorItem(newItem); 
                 }
-                hero.TryEquipItem(newItem);
+                hero.EquipItem(newItem);
             }
         }
        public static Item RandomItem(Hero hero)

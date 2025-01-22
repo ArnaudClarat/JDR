@@ -26,7 +26,7 @@ namespace JDR.Models
         // Initializes stats
         private void InitializeStats()
         {
-            Id = rand.Next(1, 1000);
+            Id = Rand.Next(1, 1000);
             Stamina = StatsCalculator.CalculateStat(5, 1.2, Level);
             Power = StatsCalculator.CalculateStat(3, 1.25, Level);
             CurrentHealthValue = Stamina * 10;
@@ -36,7 +36,7 @@ namespace JDR.Models
         // Calculates the monster level if the hero level is at least 2
         public void CalculateLevel(int heroLevel)
         {
-            RollResult = rand.Next(1, 101);
+            RollResult = Rand.Next(1, 101);
             if (RollResult <= 15)
             {
                 Level = heroLevel == 1 ? heroLevel : heroLevel - 1;
