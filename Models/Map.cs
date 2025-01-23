@@ -4,12 +4,12 @@ namespace JDR.Models
     {
         public int RowCount { get; set; }
         public int ColCount { get; set; }
-        public List<Monster> Monsters { get; private set; } = new();
-        public List<LifeFountain> Fountains { get; private set; } = new();
-        public List<Treasure> Treasures {get; private set; } = new();
+        public List<Monster> Monsters { get; private set; } = [];
+        public List<LifeFountain> Fountains { get; private set; } = [];
+        public List<Treasure> Treasures {get; private set; } = [];
         
-        private Random random = new();
-        private Hero hero;
+        private readonly Random Random = new();
+        private readonly Hero Hero;
         
         public Map(
             int rowCount,
@@ -19,7 +19,7 @@ namespace JDR.Models
         {
             RowCount = rowCount;
             ColCount = colCount;
-            this.hero = hero;
+            this.Hero = hero;
             GenerateEntities();
         }
 
@@ -34,7 +34,7 @@ namespace JDR.Models
             for (int i = 0; i < 11; i++)
             {
                 (int x, int y) = GetRandomPosition();
-                Monsters.Add(new MonsterGoblin(x, y, hero.Level));
+                Monsters.Add(new MonsterGoblin(x, y, Hero.Level));
             }
 
             // Generates 5 fountains at random location
@@ -55,7 +55,7 @@ namespace JDR.Models
             for (int i = 0; i < 1; i++)
             {
                 (int x, int y) = GetRandomPosition();
-                Monsters.Add(new Boss(x, y, hero.Level+2, "Skelletor"));
+                Monsters.Add(new Boss(x, y, Hero.Level+2, "Skelletor"));
             }
         }
         
@@ -64,7 +64,7 @@ namespace JDR.Models
             (int X, int Y) position;
             do
             {
-                position = (random.Next(0, ColCount), random.Next(0, RowCount));
+                position = (Random.Next(0, ColCount), Random.Next(0, RowCount));
             } while (
                 Monsters.Any(m => m.X == position.X && m.Y == position.Y) ||
                 Fountains.Any(f => f.X == position.X && f.Y == position.Y) ||
@@ -75,8 +75,8 @@ namespace JDR.Models
 
         public string RenderCell(int x, int y)
         {
-            if (hero.X == x && hero.Y == y)
-                return $"heroSprite {hero.FacingDirection}";
+            if (Hero.X == x && Hero.Y == y)
+                return $"heroSprite {Hero.FacingDirection}";
             else if (Monsters.Any(m => m.X == x && m.Y == y))
             {
                 var monster = Monsters.First(m => m.X == x && m.Y == y); // Finds the right type of monster

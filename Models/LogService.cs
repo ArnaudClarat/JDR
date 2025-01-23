@@ -5,10 +5,10 @@ using System.Collections.Generic;
 
 public class LogService
 {
-    private readonly List<string> _logs = new List<string>();
+    private readonly List<string> _logs = [];
     private const int MaxLogCount = 30;
 
-    public event Action OnLogUpdated;
+    public event Action? OnLogUpdated;
 
     public void Log(string message)
     {
@@ -16,7 +16,7 @@ public class LogService
         string logMessage = $"[{timestamp}] {message}";  // Adds timestamp to message
 
         _logs.Add(logMessage);
-        
+
         if (_logs.Count > MaxLogCount)
         {
             _logs.RemoveAt(0);

@@ -56,14 +56,8 @@ namespace JDR.Models
         // Mid tier spell
         public override bool MidTierAttack(Character target, Action refreshUI)
         {
-            int cost = MidTierAttackInfo.Cost;
-            if (target.CurrentHealthValue == 0 || CurrentEnergyValue < cost)
-            {
-                Console.WriteLine("Not enough Stamina");
-                return false;
-            }
+            if (!HandleAttackCost(MidTierAttackInfo.Cost, target)) return false;
 
-            CurrentEnergyValue -= cost;
             int attackBoost = (int)Math.Floor(AttackValue * 0.5);
             AttackValue += attackBoost;
 
@@ -72,7 +66,7 @@ namespace JDR.Models
 
             // Delay before stat returns to original value
             // await Task.Delay(5000);
-
+             
             AttackValue -= attackBoost;
             Console.WriteLine($"{Name}'s {MidTierAttackInfo.Name} has worn off. Attack power returns to normal.");
             refreshUI?.Invoke();  // Forces the UI to refresh after the spell has no more effect

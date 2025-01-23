@@ -3,13 +3,12 @@ namespace JDR.Models
     public enum Direction { Left, Right }
     public abstract class Hero(
         string characterName,
-        LevelProgression progression
+        LevelProgression levelProgression
         ) : Character(0, 0, characterName)
     {
         public Direction FacingDirection { get; private set; } = Direction.Right;
-        private readonly LevelProgression levelProgression = progression;
-        private static readonly LevelProgression progression = new();
-        public int ExperienceToNextLevel => levelProgression.ExperienceToLevelUp(Level);
+        public LevelProgression LevelProgression { get; private set; } = new();
+        public int ExperienceToNextLevel => LevelProgression.ExperienceToLevelUp(Level);
         public event Action? OnLevelUp;
         public int ExperienceValue { get; protected set; }
         public int Stamina { get; set; }
@@ -18,9 +17,9 @@ namespace JDR.Models
         public int Agility { get; set; }
         public int Spirit { get; set; }
         public int BonusDamage { get; set; }
-        public required AttackInfo LowTierAttackInfo { get; set; }
-        public required AttackInfo MidTierAttackInfo { get; set; }
-        public required AttackInfo UltimateAttackInfo { get; set; }
+        public AttackInfo? LowTierAttackInfo { get; set; }
+        public AttackInfo? MidTierAttackInfo { get; set; }
+        public AttackInfo? UltimateAttackInfo { get; set; }
         public Weapon? EquippedWeapon { get; private set; }
         public Armor? EquippedArmor { get; private set; }
         public Inventory? Inventory { get; private set; }
@@ -60,7 +59,7 @@ namespace JDR.Models
         protected abstract void InitializeStats();
 
         // Overrides the base LevelUp method to update the stats
-        protected void LevelUp()
+        protected virtual void LevelUp()
         {
             ExperienceValue -= ExperienceToNextLevel;
             Level++;
@@ -80,17 +79,27 @@ namespace JDR.Models
             if (CurrentEnergyValue > MaxEnergyValue)
                 CurrentEnergyValue = MaxEnergyValue;
         }
-
-        private bool PerformAttack(Character target, AttackInfo attackInfo, Action restartGameAction)
+        protected bool HandleAttackCost(int cost, Character target)
         {
-            int cost = attackInfo.Cost;
-            if (target.CurrentHealthValue == 0 || CurrentEnergyValue < cost)
+            if (target.CurrentHealthValue == 0)
             {
-                Console.WriteLine("Not enough Mana");
+                Console.WriteLine($"{target.Name} is already defeated.");
+                return false;
+            }
+
+            if (CurrentEnergyValue < cost)
+            {
+                Console.WriteLine("Not enough Mana.");
                 return false;
             }
 
             CurrentEnergyValue -= cost;
+            return true;
+        }
+        private bool PerformAttack(Character target, AttackInfo attackInfo, Action restartGameAction)
+        {
+            if (!HandleAttackCost(attackInfo.Cost, target)) return false;
+
             if (target.Dodge())
             {
                 Console.WriteLine($"{target.Name} dodged {Name}'s attack!");
@@ -117,6 +126,8 @@ namespace JDR.Models
         // Calculates the experience gained
         public void CalculateExperience(Character target)
         {
+            ArgumentNullException.ThrowIfNull(target);
+
             int levelDifference = target.Level - Level;
             double experienceMath = Math.Max(50 * Math.Pow(1.2, levelDifference), 5); // Minimum experience of 5 guaranteed
             int experienceGained = (int)Math.Round(experienceMath);
@@ -148,7 +159,7 @@ namespace JDR.Models
                     }
 
                     BonusDamage += weapon.DamageBonus;
-
+                    EquippedWeapon = weapon;
                     Console.WriteLine($"{Name} equipped a new weapon: {weapon.Name}");
                     return true;
                 }
@@ -169,7 +180,6 @@ namespace JDR.Models
 
                     ArmorValue += armor.ArmorBonus;
                     EquippedArmor = armor;
-                    
                     Console.WriteLine($"{Name} equipped new armor : {armor.Name}");
                     return true;
                 }
@@ -190,9 +200,9 @@ namespace JDR.Models
         {
             return heroType.ToLower() switch
             {
-                "mage" => new Mage(name, progression),
-                "warrior" => new Warrior(name, progression),
-                "archer" => new Archer(name, progression),
+                "mage" => new Mage(name, new LevelProgression()),
+                "warrior" => new Warrior(name, new LevelProgression()),
+                "archer" => new Archer(name, new LevelProgression()),
                 _ => throw new ArgumentException("Invalid hero type !")
             };
         }

@@ -6,10 +6,9 @@ namespace JDR.Models
     public class Armor : Item
     {
         public MaterialArmor MaterialType {get; set; }
-        public int Weight {get; private set; }
         public MaterialArmor MaterialRandom {get; set; }
         
-        private static Random random = new Random();
+        private static readonly Random Random = new();
 
         public Armor (Hero hero,
                     string name,
@@ -42,9 +41,9 @@ namespace JDR.Models
         }
 
         // Random material type selection
-        public MaterialArmor MaterialChance(int level)
+        public static MaterialArmor MaterialChance(int level)
         {
-            int roll = random.Next(1, 100);
+            int roll = Random.Next(1, 100);
 
             switch(level)
             {
@@ -106,27 +105,27 @@ namespace JDR.Models
             switch (MaterialType)
             {
                 case MaterialArmor.cloth:
-                    ArmorBonus = random.Next(4, 10);
+                    ArmorBonus = Random.Next(4, 10);
                     Weight = 2;
                     break;
                 
                 case MaterialArmor.leather:
-                    ArmorBonus = random.Next(10, 16);
+                    ArmorBonus = Random.Next(10, 16);
                     Weight = 4;
                     break;
 
                 case MaterialArmor.wood:
-                    ArmorBonus = random.Next(16, 21);
+                    ArmorBonus = Random.Next(16, 21);
                     Weight = 6;
                     break;
                 
                 case MaterialArmor.metal:
-                    ArmorBonus = random.Next(21, 27);
+                    ArmorBonus = Random.Next(21, 27);
                     Weight = 8;
                     break;
                 
                 case MaterialArmor.gold:
-                    ArmorBonus = random.Next(27, 32);
+                    ArmorBonus = Random.Next(27, 32);
                     Weight = 10;
                     break;
                 

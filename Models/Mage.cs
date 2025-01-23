@@ -56,14 +56,8 @@ namespace JDR.Models
         // Mid tier spell
         public override bool MidTierAttack(Character target, Action refreshUI)
         {
-            int cost = MidTierAttackInfo.Cost;
-            if (target.CurrentHealthValue == 0 || CurrentEnergyValue < cost)
-            {
-                Console.WriteLine("Not enough Mana");
-                return false;
-            }
+            if (!HandleAttackCost(MidTierAttackInfo.Cost, target)) return false;
 
-            CurrentEnergyValue -= cost;
             int originalArmorValue = target.ArmorValue;
             target.ArmorValue *= (int)Math.Floor(MidTierAttackInfo.Multiplier);
 
