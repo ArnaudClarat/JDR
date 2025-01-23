@@ -7,7 +7,7 @@ namespace JDR.Models
     {
         public Archer(
             string characterName,
-            LevelProgression progression,
+            LevelProgression levelProgression,
             int level = 1,
             int experienceValue = 0,
             int energyValue = 11,
@@ -19,7 +19,7 @@ namespace JDR.Models
             AttackInfo? lowTierAttackInfo = null,
             AttackInfo? midTierAttackInfo = null,
             AttackInfo? ultimateAttackInfo = null
-        ) : base(characterName, progression)
+        ) : base(characterName, levelProgression)
         {
             Level = level;
             ExperienceValue = experienceValue;
@@ -56,14 +56,8 @@ namespace JDR.Models
         // Mid tier spell
         public override bool MidTierAttack(Character target, Action refreshUI)
         {
-            int cost = MidTierAttackInfo.Cost;
-            if (target.CurrentHealthValue == 0 || CurrentEnergyValue < cost)
-            {
-                Console.WriteLine("Not enough Stamina");
-                return false;
-            }
+            if (!HandleAttackCost(MidTierAttackInfo.Cost, target)) return false;
 
-            CurrentEnergyValue -= cost;
             int reducedArmor = (int)Math.Floor(target.ArmorValue * MidTierAttackInfo.Multiplier);
             int originalArmorValue = target.ArmorValue;
             target.ArmorValue -= reducedArmor;

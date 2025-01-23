@@ -5,7 +5,7 @@ namespace JDR.Models
     {
         public int X { get; set; } = x;
         public int Y { get; set; } = y;
-        private static Random random = new Random();
+        private readonly static Random random = new();
 
         public static void FoundChest(Hero hero, Inventory inventory)
         {
@@ -21,7 +21,7 @@ namespace JDR.Models
                 {
                     inventory.AddArmorItem(newItem); 
                 }
-                hero.TryEquipItem(newItem);
+                hero.EquipItem(newItem);
             }
         }
        public static Item RandomItem(Hero hero)
@@ -30,17 +30,20 @@ namespace JDR.Models
 
             if (roll == 1) // 50% chance to have weapon
             {
-                Weapon new_weapon = new Weapon(hero, "weapon", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-                Console.WriteLine($"You have just found {new_weapon} !");
-                return new_weapon;
+                Weapon Weapon = new(hero, "weapon", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+                Console.WriteLine($"You have just found {Weapon} !");
+                return Weapon;
             }
             else if (roll == 2) // 50% chance to have armor
             {
-                Armor new_armor = new Armor(hero, "armor", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-                Console.WriteLine($"You have just found {new_armor} !");
-                return new_armor;
+                Armor Armor = new(hero, "armor", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+                Console.WriteLine($"You have just found {Armor} !");
+                return Armor;
             }
-            return null;
+            else
+            {
+                throw new Exception("Erreur mathématique");
+            }
         }
     }
 }
